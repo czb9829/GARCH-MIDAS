@@ -1,6 +1,6 @@
 """
 garch-midas model
-参数估计及样本外预测
+coefficients estimation & out-of-sample forecasts
 """
 import numpy as np
 import pandas as pd
@@ -8,26 +8,25 @@ from mfgarch import fit_mfgarch, plot_mfgarch
 
 pd.set_option("display.max_columns", None)
 
-# 读取数据
+# read data
 df = pd.read_csv("../data/data_mfgarch.csv")
 
 # *************************************************************************************
-#                             单因子garch-midas模型估计及样本外预测
+#             coefficients estimation & out-of-sample forecasts
 # *************************************************************************************
 
-# 估计模型
-# 后100期为样本外
-result = fit_mfgarch(data=df,  # 数据框
-                     y='return',  # 高频变量
-                     x='nfci',  # 低频变量
-                     low_freq='year_week',  # 低频变量频率
-                     K=52,  # 低频变量滞后阶数
-                     gamma=True,  # GJR-GARCH形式: gamma = True; GARCH(1, 1)形式： gamma = False
-                     w_restricted=True,  # 权重函数参数w1 = 1: w_restricted = True; w1为待估计参数：w_restricted = False
-                     out_of_sample=100)
+# estimation & forecasts
+result = fit_mfgarch(data=df,
+                     y='return',
+                     x='nfci',
+                     low_freq='year_week',
+                     K=52, 
+                     gamma=True, 
+                     w_restricted=True, 
+                     out_of_sample=100) # using the last 100 observations for out-of-sample forecasts
 
-print(result.predicted)  # 样本外预测结果
-rv = df["rv"].values  # 真实值波动率
+print(result.predicted) 
+rv = df["rv"].values  # real volatility (intraday rv as a substitute)
 rv = rv[-100:]
-pred = result.predicted["vol"].values  # 波动率预测值
+pred = result.predicted["vol"].values  # predicted volatility
 print(np.nanmean((pred - rv) ** 2))  # mse
