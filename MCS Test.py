@@ -3,23 +3,24 @@ import numpy as np
 import pandas as pd
 
 
-
 pd.set_option("display.max_columns", None)
 
-# 读取数据
-df = pd.read_csv(r"D:\气候政策不确定性与能源期货价格波动\Manuscript\RMSE120.csv")
+# read data
+df = pd.read_csv(r"--------RMSE.csv") # the csv file contains the values of loss functions
 df = df.copy()[:60]
 
-mcs = MCS(df, size=0.1)
+mcs = MCS(df, size=0.1) # threshold of p-value
 a = mcs.compute()
 
-# 显示各模型的MSC P值
+# show the p-value of each model
 print("MCS P-values")
 print(mcs.pvalues)
+
 # Included: P>0.1
 print("Included")
 included = mcs.included
 print(included)
+
 # Excluded: P<=0.1
 print("Excluded")
 excluded = mcs.excluded
